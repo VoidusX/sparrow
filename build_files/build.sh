@@ -13,7 +13,22 @@ cp -avf "/ctx/system_files"/. /
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux
+#dnf5 install -y tmux
+dnf5 install -y git cargo
+
+dnf5 -y copr enable lionheartp/Hyprland
+dnf5 install -y hyprland noctalia noctalia-greeter neovim greetd kitty distrobox
+dnf5 -y copr disable lionheartp/Hyprland
+
+dnf5 -y copr enable imput/helium
+dnf5 install -y helium-bin
+dnf5 -y copr disable imput/helium
+
+git clone https://github.com/Gerharddc/litterbox.git /tmp/litterbox
+cd /tmp/litterbox
+cargo build --release
+sudo cp target/release/litterbox /usr/local/bin/
+cd /
 
 # Use a COPR Example:
 #

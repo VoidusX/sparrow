@@ -1,0 +1,3 @@
+[submodule "system_files/etc/skel/.config/nvim"]
+	path = system_files/etc/skel/.config/nvim
+	url = https://github.com/LazyVim/starter
