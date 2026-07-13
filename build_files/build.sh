@@ -14,6 +14,11 @@ cp -avf "/ctx/system_files"/. /
 
 # this installs a package from fedora repos
 #dnf5 install -y tmux
+
+# fix cargo package key lock issue during image build process
+export CARGO_HOME="/tmp/cargo"
+mkdir -p "$CARGO_HOME"
+
 dnf5 install -y git cargo
 
 dnf5 -y copr enable lionheartp/Hyprland
@@ -27,7 +32,7 @@ dnf5 -y copr disable imput/helium
 git clone https://github.com/Gerharddc/litterbox.git /tmp/litterbox
 cd /tmp/litterbox/litterbox
 cargo build --release
-sudo cp target/release/litterbox /usr/local/bin/
+cp target/release/litterbox /usr/bin/
 cd /
 
 # Use a COPR Example:
