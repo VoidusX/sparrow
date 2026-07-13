@@ -1,19 +1,8 @@
 # titanoboa/Containerfile
-FROM ghcr.io/voidusx/sparrow:latest
-
-# Copy ISO configuration
-COPY iso.yaml /usr/lib/bootc-image-builder/iso.yaml
-
-# Copy hook scripts (will be invoked by Titanoboa action, not run in container)
-COPY titanoboa_hook_preinitramfs.sh /tmp/
-COPY titanoboa_hook_postrootfs.sh /tmp/
-
-# Ensure kernel/initramfs are in expected locations
-RUN if [ ! -f /images/pxeboot/vmlinuz ]; then \
-      mkdir -p /images/pxeboot && \
-      cp /usr/lib/modules/*/vmlinuz /images/pxeboot/vmlinuz && \
-      cp /usr/lib/modules/*/initramfs.img /images/pxeboot/initrd.img; \
-    fi
-
-LABEL org.opencontainers.image.title="Sparrow ISO Builder"
-LABEL org.opencontainers.image.description="Sparrow with Titanoboa ISO configuration"
+ARG BASE_IMAGE=ghcr.io/voidusx/sparrow:latest
+FROM ${BASE_IMAGE}
+COPY ./src /src
+RUN chmod +x /src/build.sh
+RUN --mount=type=cache,target=/var/tmp/libdnf5,id=libdnf5 \
+    /src/build.sh
+RUN rm -fr /src
