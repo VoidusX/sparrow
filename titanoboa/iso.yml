@@ -1,0 +1,10 @@
+# titanboa iso image, builder reads `.label` which must match CDLABEL
+# it also reads `.grub2.*`
+label: "sparrow-LiveCD"
+grub2:
+  default: 0
+  timeout: 10
+  entries:
+    - name: "Sparrow (LiveCD)"
+      linux: "/images/pxeboot/vmlinuz quiet rhgb root=live:CDLABEL=sparrow-LiveCD rd.live.image"
+      initrd: "/images/pxeboot/initrd.img"

@@ -39,8 +39,6 @@ jobs:
     runs-on: ${{ inputs.platform == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     strategy:
       fail-fast: false
-      matrix:
-        disk-type: ["qcow2", "anaconda-iso"]
     permissions:
       contents: read
       packages: read
@@ -77,16 +75,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Build disk images
+      - name: Build ISO (1/2)
+        run: |
+          set -euo pipefail
+          sudo podman build \
+            --cap-add sys_admin \
+            --security-opt label=disable \
+            --squash \
+            --build-arg BASE_IMAGE="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}" \
+            -t "localhost/${{ env.IMAGE_NAME }}-payload:${{ env.DEFAULT_TAG }}" \
+            titanoboa/
+
+      - name: Build ISO (2/2)
         id: build
-        uses: osbuild/bootc-image-builder-action@8661cd3832544ad68c12dcde8681b13ab0f56a8d # main
+        uses: ublue-os/titanoboa@main
         with:
-          builder-image: ${{ env.BIB_IMAGE }}
-          config-file: ${{ matrix.disk-type == 'anaconda-iso' && './disk_config/iso.toml' || './disk_config/disk.toml' }}
-          image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}
-          chown: ${{ env.USER_UID }}:${{ env.USER_GID }}
-          types: ${{ matrix.disk-type }}
-          additional-args: --use-librepo=True
+          image-ref: localhost/${{ env.IMAGE_NAME }}-payload:${{ env.DEFAULT_TAG }}
+          flatpaks-list: ${{ github.workspace }}/titanoboa/flatpaks.list
+          hook-pre-initramfs: ${{ github.workspace }}/titanoboa/titanoboa_hook_preinitramfs.sh
+          hook-post-rootfs: ${{ github.workspace }}/titanoboa/titanoboa_hook_postrootfs.sh
+          compression: squashfs
+          builder-distro: fedora
+          iso-dest: ${{ github.workspace }}/output/${{ env.IMAGE_NAME }}-${{ env.DEFAULT_TAG }}-live-amd64.iso
+
 
       - name: Upload disk images and Checksum to Job Artifacts
         if: inputs.upload-to-s3 != true && github.event_name != 'pull_request'
@@ -97,7 +108,7 @@ jobs:
           retention-days: 0
           compression-level: 0
           overwrite: true
-      
+
       - name: Upload to S3
         if: inputs.upload-to-s3 == true && github.event_name != 'pull_request'
         shell: bash
