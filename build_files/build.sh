@@ -25,7 +25,7 @@ dnf5 install -y helium-bin
 dnf5 -y copr disable imput/helium
 
 git clone https://github.com/Gerharddc/litterbox.git /tmp/litterbox
-cd /tmp/litterbox
+cd /tmp/litterbox/litterbox
 cargo build --release
 sudo cp target/release/litterbox /usr/local/bin/
 cd /
