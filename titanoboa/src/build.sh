@@ -5,12 +5,17 @@
 set -exo pipefail
 { export PS4='+( ${BASH_SOURCE}:${LINENO} ): '; } 2>/dev/null
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_IMAGE="${INSTALL_IMAGE:-ghcr.io/voidusx/sparrow:latest}"
 
 # /root is a symlink on these images; make sure its target exists.
 mkdir -p "$(realpath /root)"
 # bwrap (flatpak/dnf scriptlets) needs /proc/sys writable during the build.
 mount -o remount,rw /proc/sys || true
+
+# Install flatpaks
+curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo
+xargs -r flatpak install -y --noninteractive <"$SCRIPT_DIR/flatpaks.list"
 
 # Embed the image to install so the live ISO can install fully offline.
 podman pull "${INSTALL_IMAGE}"
@@ -28,7 +33,7 @@ DRACUT_NO_XATTR=1 dracut -v --force --zstd --reproducible --no-hostonly \
     --add "dmsquash-live dmsquash-live-autooverlay" \
     "/usr/lib/modules/${kernel}/initramfs.img" "${kernel}"
 
-# Live session scripts (KDE).
+# Live session scripts.
 dnf install -y livesys-scripts
 sed -i "s/^livesys_session=.*/livesys_session=hyprland/" /etc/sysconfig/livesys
 systemctl enable livesys.service livesys-late.service
@@ -41,6 +46,25 @@ mkdir -p /var/lib/rpm-state  # Anaconda Web UI needs this
 cat >>/usr/share/anaconda/interactive-defaults.ks <<EOF
 
 ostreecontainer --url=${INSTALL_IMAGE} --transport=containers-storage --no-signature-verification
+%include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
+%include /usr/share/anaconda/post-scripts/install-flatpaks.ks
+EOF
+
+# Install Flatpaks
+cat <<'EOF' >>/usr/share/anaconda/post-scripts/install-flatpaks.ks
+%post --erroronfail --nochroot --log=/tmp/anacoda_custom_logs/install-flatpaks.log
+deployment="$(ostree rev-parse --repo=/mnt/sysimage/ostree/repo ostree/0/1/0)"
+target="/mnt/sysimage/ostree/deploy/default/deploy/$deployment.0/var/lib/"
+mkdir -p "$target"
+rsync -aAXUHKP --filter='-x security.selinux' /var/lib/flatpak "$target"
+%end
+EOF
+
+# Disable Fedora Flatpak Repo
+cat <<EOF >>/usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
+%post --erroronfail --log=/tmp/anacoda_custom_logs/disable-fedora-flatpak.log
+systemctl disable flatpak-add-fedora-repos.service || :
+%end
 EOF
 
 CONFIG_FILE="${ROOTFS_DIR}/etc/greetd/config.toml"
@@ -53,7 +77,7 @@ if ! grep -q "^\[initial_session\]" "$CONFIG_FILE"; then
 
 [initial_session]
 # Forces autologin for the live user on the FIRST boot only
-command = "Hyprland"
+command = "Hyprland -c /usr/share/hypr/hyprland.lua"
 user = "liveuser"
 EOF
 else
