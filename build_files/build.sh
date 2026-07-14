@@ -2,9 +2,6 @@
 
 set -ouex pipefail
 
-# Copy the contents of system_files/ of the git repo to /
-cp -avf "/ctx/system_files"/. /
-
 ### Install packages
 
 # Packages can be installed from any enabled yum repo on the image.
@@ -45,3 +42,8 @@ cd /
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket
+systemctl enable greetd.service
+
+# Copy the contents of system_files/ of the git repo to /
+# this must happen AFTER installing packages and enabling core services
+cp -avf "/ctx/system_files"/. /
