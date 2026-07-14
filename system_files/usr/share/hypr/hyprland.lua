@@ -1,10 +1,10 @@
 local ipc = "noctalia msg"
-local mainMod = "Super"
+local mainMod = "SUPER"
 
 -- Core binds
-hl.bind(mainMod .. "+Space", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"))
+hl.bind(mainMod .. "+SPACE", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"))
 hl.bind(mainMod .. "+S", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center"))
-hl.bind(mainMod .. "+comma", hl.dsp.exec_cmd(ipc .. " settings-toggle"))
+hl.bind(mainMod .. "+COMMA", hl.dsp.exec_cmd(ipc .. " settings-toggle"))
 
 -- Media keys
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(ipc .. " volume-up"))
@@ -14,8 +14,8 @@ hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(ipc .. " brightness-up"))
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. " brightness-down"))
 
 -- Sparrow Defaults
-hl.bind(mainMod .. "+Enter", hl.dsp.exec_cmd("kitty"))
-hl.bind(mainMod .. "+Shift+Enter", hl.dsp.exec_cmd("helium-browser"))
+hl.bind(mainMod .. "+ENTER", hl.dsp.exec_cmd("kitty"))
+hl.bind(mainMod .. "+SHIFT+ENTER", hl.dsp.exec_cmd("helium-browser"))
 
 hl.config({
     general = {
