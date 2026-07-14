@@ -92,4 +92,8 @@ systemctl enable var-tmp.mount
 mkdir -p /usr/lib/bootc-image-builder
 cp /src/iso.yaml /usr/lib/bootc-image-builder/iso.yaml
 
+# final patching for noctalia shell to detect the application
+sudo sed -i 's/NoDisplay=true/NoDisplay=false/' /usr/share/applications/liveinst.desktop
+update-desktop-database
+
 dnf clean all || true
