@@ -94,11 +94,11 @@ jobs:
         uses: ublue-os/titanoboa@main
         with:
           image-ref: localhost/${{ env.IMAGE_NAME }}-payload:${{ env.DEFAULT_TAG }}
-          flatpaks-list: ${{ github.workspace }}/titanoboa/flatpaks.list
-          hook-pre-initramfs: ${{ github.workspace }}/titanoboa/titanoboa_hook_preinitramfs.sh
+#          flatpaks-list: ${{ github.workspace }}/titanoboa/flatpaks.list
+#          hook-pre-initramfs: ${{ github.workspace }}/titanoboa/titanoboa_hook_preinitramfs.sh
 #          hook-post-rootfs: ${{ github.workspace }}/titanoboa/titanoboa_hook_postrootfs.sh
-          compression: squashfs
-          builder-distro: fedora
+#          compression: squashfs
+#          builder-distro: fedora
           iso-dest: ${{ github.workspace }}/output/${{ env.IMAGE_NAME }}-${{ env.DEFAULT_TAG }}-live-${{ inputs.platform }}.iso
 
 
