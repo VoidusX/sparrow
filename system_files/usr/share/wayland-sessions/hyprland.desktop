@@ -2,5 +2,5 @@
 Name=Hyprland
 Comment=An intelligent dynamic tiling Wayland compositor
 # Force the system config path
-Exec=Hyprland --config /usr/share/hypr/hyprland.lua
+Exec=start-hyprland -- -c /usr/share/hypr/hyprland.lua
 Type=Application
