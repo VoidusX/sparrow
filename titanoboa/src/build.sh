@@ -43,6 +43,23 @@ cat >>/usr/share/anaconda/interactive-defaults.ks <<EOF
 ostreecontainer --url=${INSTALL_IMAGE} --transport=containers-storage --no-signature-verification
 EOF
 
+CONFIG_FILE="${ROOTFS_DIR}/etc/greetd/config.toml"
+# Check if initial_session already exists to avoid duplicates
+if ! grep -q "^\[initial_session\]" "$CONFIG_FILE"; then
+    echo "Injecting initial_session into greetd config..."
+
+    # Append the initial_session block
+    cat >> "$CONFIG_FILE" <<EOF
+
+[initial_session]
+# Forces autologin for the live user on the FIRST boot only
+command = "Hyprland"
+user = "liveuser"
+EOF
+else
+    echo "initial_session already present in greetd config."
+fi
+
 # ISO builder bits + the EFI layout titanoboa's build_iso.sh expects.
 dnf install -y grub2-efi-x64-cdboot xorriso isomd5sum
 mkdir -p /boot/efi
