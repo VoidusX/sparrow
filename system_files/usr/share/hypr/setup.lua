@@ -65,11 +65,5 @@ elseif userStatus.configPresent == true and success == true then
         }
     }
 elseif userStatus.configPresent == false then
-    return {
-        SparrowConfig = sysConfig,
-        UserConfig = {
-            Enabled = isUserConfigAllowed,
-            Loaded = userStatus.configPresent,
-        }
-    }
+    return sysConfig, { Enabled = isUserConfigAllowed, Loaded = userStatus.configPresent}
 end

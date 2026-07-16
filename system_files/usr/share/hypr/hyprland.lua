@@ -1,4 +1,5 @@
-local sparrow, user;
+local sparrow
+local user;
 xpcall(function()
     sparrow, user = require("setup")
 end, function()
@@ -74,7 +75,7 @@ if user.Enabled ~= true or user.Loaded ~= true then
 
     if Config.Core.DisableShell == false then
         hl.on("hyprland.start", function()
-            hl.exec_cmd("noctalia --daemon")
+            hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
         end)
     end
 end
