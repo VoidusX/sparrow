@@ -25,8 +25,8 @@ if user.Enabled ~= true or user.Loaded ~= true then
     hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. " brightness-down"))
 
     -- Sparrow Defaults
-    hl.bind(mainMod .. "+ENTER", hl.dsp.exec_cmd("kitty"))
-    hl.bind(mainMod .. "+SHIFT+ENTER", hl.dsp.exec_cmd("helium-browser"))
+    hl.bind(mainMod .. "+RETURN", hl.dsp.exec_cmd("kitty"))
+    hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium-browser"))
 
     if Config.Preset == 0 then
         hl.config({
@@ -74,7 +74,7 @@ if user.Enabled ~= true or user.Loaded ~= true then
 
     if Config.Core.DisableShell == false then
         hl.on("hyprland.start", function()
-            hl.exec_cmd("noctalia")
+            hl.exec_cmd("noctalia --daemon")
         end)
     end
 end
