@@ -1,7 +1,9 @@
-local sparrow
+local sparrow;
 local user;
 xpcall(function()
-    sparrow, user = require("setup")
+    local config = require("setup")
+    sparrow = config.SparrowConfig
+    user = config.UserConfig
 end, function()
     os.exit(290) -- exit code 290 is if setup crashes, without a proper catch within.
     -- this is a intentional crash because we rely on Sparrow Config data to work.
@@ -27,7 +29,7 @@ if user.Enabled ~= true or user.Loaded ~= true then
 
     -- Sparrow Defaults
     hl.bind(mainMod .. "+RETURN", hl.dsp.exec_cmd("kitty"))
-    hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium-browser"))
+    hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium"))
 
     if Config.Preset == 0 then
         hl.config({
