@@ -2,17 +2,16 @@ local config = require("setup")
 local sparrow = config.SparrowConfig
 local user = config.UserConfig
 
-for i, v in config do
+print("sparrow",config.SparrowConfig)
+print("user",config.UserConfig)
+for i, v in pairs(config) do
 	print("debug: ",i,"=",v)
 end
 
 local ipc = "noctalia msg"
 local mainMod = "SUPER"
 
--- only set if user configuration is not loaded.
-if user.Enabled ~= true or user.Loaded ~= true then
-    local Config = sparrow.Core
-
+local function default_binds()
     -- Core binds
     hl.bind(mainMod .. "+SPACE", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"))
     hl.bind(mainMod .. "+S", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center"))
@@ -28,54 +27,77 @@ if user.Enabled ~= true or user.Loaded ~= true then
     -- Sparrow Defaults
     hl.bind(mainMod .. "+RETURN", hl.dsp.exec_cmd("kitty"))
     hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium"))
+end
 
-    if Config.Preset == 0 then
+local presets = {}
+presets[0] = {
+    general = {
+        gaps_in = 0,
+        gaps_out = 0,
+    },
+
+    decoration = {
+        rounding = 0,
+        rounding_power = 0,
+
+        shadow = {
+            enabled = false,
+            range = 4,
+            render_power = 3,
+            color = 0xee1a1a1a,
+        },
+
+        blur = {
+            enabled = false,
+            size = 3,
+            passes = 2,
+            vibrancy = 0.1696,
+        },
+    },
+
+    animations = {
+        enabled = false,
+    },
+
+    misc = {
+        force_default_wallpaper = 0,
+        disable_autoreload = true
+    }
+}
+
+
+
+-- only set if user configuration is not loaded.
+local lua_success, lua_err = pcall(function()
+    if user.Enabled ~= true or user.Loaded ~= true then
+        local Config = sparrow.Core
+
+        default_binds()
+        hl.config(presets[Config.Preset])
+
+        local Layouts = { "dwindle","master","scrolling","monocle" }
         hl.config({
             general = {
-                gaps_in = 0,
-                gaps_out = 0,
+                layout = Layouts[Config.Core.WindowLayout] or Layouts[1]
             },
+        });
 
-            decoration = {
-                rounding = 0,
-                rounding_power = 0,
-
-                shadow = {
-                    enabled = false,
-                    range = 4,
-                    render_power = 3,
-                    color = 0xee1a1a1a,
-                },
-
-                blur = {
-                    enabled = false,
-                    size = 3,
-                    passes = 2,
-                    vibrancy = 0.1696,
-                },
-            },
-
-            animations = {
-                enabled = false,
-            },
-
-            misc = {
-                force_default_wallpaper = 0,
-                disable_autoreload = true
-            }
-        })
+        if Config.Core.DisableShell == false then
+            hl.on("hyprland.start", function()
+                hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
+            end)
+        end
     end
+end)
 
-    local Layouts = { "dwindle","master","scrolling","monocle" }
-    hl.config({
-        general = {
-            layout = Layouts[Config.Core.WindowLayout] or Layouts[1]
-        },
-    });
-
-    if Config.Core.DisableShell == false then
-        hl.on("hyprland.start", function()
-            hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
-        end)
-    end
+-- force the default preset with notification error if system config failed to load.
+if lua_success ~= true then
+    print("ALERT: System Config Error! Reason: ", lua_err)
+    default_binds()
+    hl.config(presets[Config.Preset])
+    hl.config({general = {layout = "dwindle"}});
+    hl.on("hyprland.start", function()
+        hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
+    end)
+    hl.exec_cmd(string.format('notify-send "Hyprland Error" "Failed to load system config: %s" -u critical -i dialog-error', lua_err))
 end
