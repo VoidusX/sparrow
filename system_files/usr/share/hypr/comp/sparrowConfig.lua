@@ -4,14 +4,29 @@ local badSyntax = {
     "os%.execute", "os%.remove", "os%.rename", "os%.tmpname", "os%.setlocale", "os%.setenv", "io%.open", "io%.popen", "io%.input", "io%.output", "io%.close", "debug%.", "package%.loadlib", "package%.loaded", "package%.path", "package%.cpath", "dofile", "loadfile", "loadstring", "load", "require", "pcall", "xpcall", "setfenv", "getfenv", "_ENV"
 }
 
+local function stripCommentsAndStrings(content)
+    -- Remove multi-line comments: --[[ ... ]]
+    content = content:gsub("--%[%[.-%]%]", "")
+    -- Remove single-line comments: -- ...
+    content = content:gsub("--[^\n]*", "")
+    -- Remove double-quoted strings: "..." (handles basic escapes)
+    content = content:gsub('"[^"\\]*(\\.[^"\\]*)*"', '""')
+    -- Remove single-quoted strings: '...' (handles basic escapes)
+    content = content:gsub("'[^'\\]*(\\.[^'\\]*)*'", "''")
+    return content
+end
+
 local function read(filepath)
     local f, err = io.open(filepath, "r")
     if not f then return false, "read failure." end
     local content = f:read("*a")
     f:close()
 
+    -- Create a sanitized version for security checking
+    local code = stripCommentsAndStrings(content)
+
     for _, pattern in ipairs(badSyntax) do
-        if content:match(pattern) then
+        if code:match(pattern) then
             return false, "config contains bad syntax."
         end
     end
