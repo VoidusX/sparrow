@@ -18,7 +18,9 @@ end
 
 local function read(filepath)
     local f, err = io.open(filepath, "r")
-    if not f then return false, "read failure." end
+    if not f then
+        print(err)
+        return false, "read failure." end
     local content = f:read("*a")
     f:close()
 

@@ -7,7 +7,7 @@ end
 local sparrow = require("comp/sparrowConfig")
 local userConfig = require("comp/userConfig")
 local sysConfig = sparrow.getSystemConfig()
-local isUserConfigAllowed = (sysConfig and sysConfig.EnableUserCustomization == true)
+local isUserConfigAllowed = (sysConfig and sysConfig.Hyprland and sysConfig.Hyprland.EnableUserCustomization == true)
 local userStatus = userConfig.getUserConfigPath(isUserConfigAllowed)
 local success;
 

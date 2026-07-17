@@ -2,6 +2,7 @@ local config = require("setup")
 local sparrow = config.SparrowConfig
 local user = config.UserConfig
 
+print("definitions check.")
 print("sparrow",config.SparrowConfig)
 print("user",config.UserConfig)
 
@@ -70,7 +71,8 @@ local lua_success, lua_err = pcall(function()
     assert(type(user)=="table","user config load failure.")
 
     if user.Enabled ~= true or user.Loaded ~= true then
-        local Config = sparrow.Core
+
+        local Config = sparrow.Hyprland.Core
 
         default_binds()
         hl.config(presets[Config.Preset])
@@ -78,11 +80,11 @@ local lua_success, lua_err = pcall(function()
         local Layouts = { "dwindle","master","scrolling","monocle" }
         hl.config({
             general = {
-                layout = Layouts[Config.Core.WindowLayout] or Layouts[1]
+                layout = Layouts[Config.WindowLayout] or Layouts[1]
             },
         });
 
-        if Config.Core.DisableShell == false then
+        if Config.DisableShell == false then
             hl.on("hyprland.start", function()
                 hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
             end)
