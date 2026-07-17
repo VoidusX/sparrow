@@ -4,9 +4,6 @@ local user = config.UserConfig
 
 print("sparrow",config.SparrowConfig)
 print("user",config.UserConfig)
-for i, v in pairs(config) do
-	print("debug: ",i,"=",v)
-end
 
 local ipc = "noctalia msg"
 local mainMod = "SUPER"
@@ -69,6 +66,9 @@ presets[0] = {
 
 -- only set if user configuration is not loaded.
 local lua_success, lua_err = pcall(function()
+    assert(type(sparrow)=="table","sparrow config load failure.")
+    assert(type(user)=="table","user config load failure.")
+
     if user.Enabled ~= true or user.Loaded ~= true then
         local Config = sparrow.Core
 
@@ -92,12 +92,18 @@ end)
 
 -- force the default preset with notification error if system config failed to load.
 if lua_success ~= true then
-    print("ALERT: System Config Error! Reason: ", lua_err)
+
+    local file, line, msg = lua_err:match("^(.-):(%d+):(.+)$")
+    file = file:gsub("\\", "/")
+    file = file:match("hypr/(.*)$")
+
+    print("ALERT: System Config Error! Reason:"..tostring(msg))
+    print("Traceback: "..tostring(file).." -> line "..tostring(line))
     default_binds()
-    hl.config(presets[Config.Preset])
+    hl.config(presets[0])
     hl.config({general = {layout = "dwindle"}});
     hl.on("hyprland.start", function()
         hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
     end)
-    hl.exec_cmd(string.format('notify-send "Hyprland Error" "Failed to load system config: %s" -u critical -i dialog-error', lua_err))
+    hl.exec_cmd(string.format('notify-send "System Error" "%s[%s]:%s" -u critical -i dialog-error',file,tostring(line),msg))
 end

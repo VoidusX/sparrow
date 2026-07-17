@@ -22,7 +22,7 @@ if userStatus.configPresent == true then
         func()
     else
         success = false;
-        hl.exec_cmd(string.format('notify-send "Hyprland Error" "Failed to load user config: %s" -u critical -i dialog-error', err))
+        hl.exec_cmd(string.format('notify-send "Hyprland" "Failed to load user config: %s" -u critical -i dialog-error', err))
     end
 elseif userStatus.configPresent == false then
     local msg = ""
