@@ -1,13 +1,11 @@
-local sparrow;
-local user;
-xpcall(function()
-    local config = require("setup")
-    sparrow = config.SparrowConfig
-    user = config.UserConfig
-end, function()
-    os.exit(290) -- exit code 290 is if setup crashes, without a proper catch within.
-    -- this is a intentional crash because we rely on Sparrow Config data to work.
-end)
+local config = require("setup")
+local sparrow = config.SparrowConfig
+local user = config.UserConfig
+
+for i, v in config do
+	print("debug: ",i,"=",v)
+end
+
 local ipc = "noctalia msg"
 local mainMod = "SUPER"
 
