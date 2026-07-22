@@ -45,6 +45,9 @@ cargo build --release
 cp target/release/litterbox /usr/bin/
 cd /
 
+# Required for the below packages to work.
+dnf5 install -y alsa-lib-devel
+
 # Pre-installed games for simple entertainment
 cargo install tetro-tui
 cargo install chess-tui
