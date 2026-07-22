@@ -47,3 +47,7 @@ systemctl enable greetd.service
 # Copy the contents of system_files/ of the git repo to /
 # this must happen AFTER installing packages and enabling core services
 cp -avf "/ctx/system_files"/. /
+
+# ctx fails to pull in git submodules like the lazyvim starter
+# sparrow works around this issue by injecting it manually
+git clone --depth 1 https://github.com/LazyVim/starter.git /etc/skel/.config/nvim
