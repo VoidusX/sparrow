@@ -16,12 +16,13 @@ set -ouex pipefail
 export CARGO_HOME="/tmp/cargo"
 mkdir -p "$CARGO_HOME"
 
-dnf5 remove -y firefox firefox-langpacks htop nwg-panel nvtop
+dnf5 remove -y firefox firefox-langpacks htop nvtop
 
 dnf5 install -y git cargo btop
 
 dnf5 -y copr enable lionheartp/Hyprland
-dnf5 install -y hyprland noctalia noctalia-greeter neovim greetd kitty distrobox
+dnf5 install -y hyprland noctalia noctalia-greeter neovim greetd kitty distrobox \
+hyprland-guiutils hyprshutdown --exclude=nwg-panel --exclude=uwsm
 dnf5 -y copr disable lionheartp/Hyprland
 
 dnf5 -y copr enable imput/helium
