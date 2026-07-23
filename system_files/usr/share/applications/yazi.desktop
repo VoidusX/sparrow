@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Yazi
+Comment=Blazing fast terminal file manager
+Exec=/usr/bin/yazi %f
+Icon=system-file-manager
+Terminal=true
+Type=Application
+Categories=Utility;FileTools;

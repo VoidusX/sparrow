@@ -25,6 +25,7 @@ local function default_binds()
     -- Sparrow Defaults
     hl.bind(mainMod .. "+RETURN", hl.dsp.exec_cmd("kitty"))
     hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium"))
+    hl.bind(mainMod .. "+E", hl.dsp.exec_cmd("kitty -- spf"))
 end
 
 local presets = {}

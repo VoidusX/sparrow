@@ -50,8 +50,8 @@ cd /
 dnf5 install -y alsa-lib-devel
 
 # Pre-installed games for simple entertainment
-cargo install tetro-tui
-cargo install chess-tui
+cargo install --root /usr tetro-tui
+cargo install --root /usr chess-tui
 
 # Use a COPR Example:
 #

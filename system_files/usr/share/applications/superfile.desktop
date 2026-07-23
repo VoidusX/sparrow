@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Superfile
+Comment=Beginner friendly terminal file manager
+Exec=/usr/bin/spf %f
+Icon=system-file-manager
+Terminal=true
+Type=Application
+Categories=Utility;FileTools;

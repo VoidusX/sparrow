@@ -64,5 +64,5 @@ source = "builtin"
 wallpaper_scheme = "m3-content"
 
     [theme.templates]
-    builtin_ids = [ "gtk3", "gtk4", "kitty", "qt" ]
-    community_ids = [ "neovim" ]
+    builtin_ids = [ "gtk3", "gtk4", "kitty", "qt", "btop", "kcolorscheme" ]
+    community_ids = [ "neovim", "yazi", "hyprtoolkit" ]
