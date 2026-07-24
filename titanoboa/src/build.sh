@@ -126,6 +126,8 @@ cp /src/iso.yaml /usr/lib/bootc-image-builder/iso.yaml
 
 # final patching for noctalia shell to detect the application
 sudo sed -i 's/NoDisplay=true/NoDisplay=false/' /usr/share/applications/liveinst.desktop
+# hide the firefox application that is installed in the livecd somehow.
+sudo sed -i 's/NoDisplay=false/NoDisplay=true/' /usr/share/applications/org.mozilla.firefox.desktop
 update-desktop-database
 
 dnf clean all || true
