@@ -9,7 +9,12 @@ local userConfig = require("comp/userConfig")
 local sysConfig = sparrow.getSystemConfig()
 local isUserConfigAllowed = (sysConfig and sysConfig.Hyprland and sysConfig.Hyprland.EnableUserCustomization == true)
 local userStatus = userConfig.getUserConfigPath(isUserConfigAllowed)
+local envStatus = sparrow.loadSystemVariables()
 local success;
+
+if envStatus ~= true then
+    hl.exec_cmd(string.format('notify-send "Hyprland" "%s" -u critical -i dialog-error', "Failed to obtain System Enviornment Variables!"))
+end
 
 if userStatus.configPresent == true then
     success = true
@@ -38,9 +43,15 @@ elseif userStatus.configPresent == false then
         msg = "User config directory not found."
         urgency = "high"
         elevationSet = true
+        if noNotify == false then
+            print("{setup}: hypr/ missing, default used instead.")
+        end
     elseif elevationSet == false then
         msg = "User config file not found."
         urgency = "high"
+        if noNotify == false then
+            print("{setup}: hypr/hyprland.lua missing, default used instead.")
+        end
     end
 
     if noNotify == false then

@@ -8,6 +8,7 @@ function M.getUserConfigPath(systemEnabled)
 
     local xdg = os.getenv("XDG_CONFIG_HOME")
     if not xdg or xdg == "" then
+        print("{setup/user}: variable XDG_CONFIG_HOME is undefined.")
         return { configDirPresent = false, configPresent = false, path = "" }
     end
 
@@ -20,6 +21,7 @@ function M.getUserConfigPath(systemEnabled)
     local dir_ok = (type(code) == "boolean" and code) or (type(code) == "number" and code == 0)
 
     if not dir_ok then
+        print("{setup/user}: no such directory.")
         return { configDirPresent = false, configPresent = false, path = "" }
     end
 
@@ -27,6 +29,10 @@ function M.getUserConfigPath(systemEnabled)
     local f = io.open(file, "r")
     local file_ok = f ~= nil
     if f then f:close() end
+
+    if not file_ok then
+        print("{setup/user}: no such file.")
+    end
 
     return {
         configDirPresent = true,

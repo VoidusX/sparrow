@@ -2,9 +2,9 @@ local config = require("setup")
 local sparrow = config.SparrowConfig
 local user = config.UserConfig
 
-print("definitions check.")
-print("sparrow",config.SparrowConfig)
-print("user",config.UserConfig)
+print("{hyprland}: definitions check.")
+print("- sparrow",config.SparrowConfig)
+print("- user",config.UserConfig)
 
 local ipc = "noctalia msg"
 local mainMod = "SUPER"
@@ -26,6 +26,11 @@ local function default_binds()
     hl.bind(mainMod .. "+RETURN", hl.dsp.exec_cmd("kitty"))
     hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium"))
     hl.bind(mainMod .. "+E", hl.dsp.exec_cmd("kitty -- spf"))
+
+    -- Hyprshot binds
+    hl.bind(mainMod .. "+PRINT",hl.dsp.exec_cmd("hyprshot -m window"))
+    hl.bind("PRINT",hl.dsp.exec_cmd("hyprshot -m output"))
+    hl.bind("SHIFT+PRINT",hl.dsp.exec_cmd("hyprshot -m region"))
 end
 
 local presets = {}
@@ -72,13 +77,12 @@ local lua_success, lua_err = pcall(function()
     assert(type(user)=="table","user config load failure.")
 
     if user.Enabled ~= true or user.Loaded ~= true then
-
         local Config = sparrow.Hyprland.Core
 
         default_binds()
         hl.config(presets[Config.Preset])
 
-        local Layouts = { "dwindle","master","scrolling","monocle" }
+        local Layouts = { "dwindle", "master", "scrolling", "monocle" }
         hl.config({
             general = {
                 layout = Layouts[Config.WindowLayout] or Layouts[1]
@@ -90,6 +94,11 @@ local lua_success, lua_err = pcall(function()
                 hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
             end)
         end
+    elseif user.Enabled == true and user.Loaded == true then
+        if sparrow.IncludeDefaultBinds == true then
+            default_binds()
+            print("{hyprland}: user config loaded w/ default binds.")
+        end
     end
 end)
 
@@ -100,8 +109,9 @@ if lua_success ~= true then
     file = file:gsub("\\", "/")
     file = file:match("hypr/(.*)$")
 
-    print("ALERT: System Config Error! Reason:"..tostring(msg))
-    print("Traceback: "..tostring(file).." -> line "..tostring(line))
+    print("{hyprland/failsafe}: System Config Error! Reason:"..tostring(msg))
+    print("- Traceback: " .. tostring(file) .. " -> line " .. tostring(line))
+    print("- failsafe was triggered, preset 0 will be used.")
     default_binds()
     hl.config(presets[0])
     hl.config({general = {layout = "dwindle"}});

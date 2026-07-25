@@ -28,5 +28,8 @@ return {
         -- EnableUserCustomization overrides Core entirely in favor of $XDG_CONFIG_HOME/hypr/hyprland.lua
         -- Enable at your own risk!
         EnableUserCustomization = false,
+        -- IncludeDefaultBinds is a property that is only used when EnableUserCustomization is true.
+        -- This is in case for some reason you dont have binds properly set up beforehand.
+        IncludeDefaultBinds = false
     },
 }

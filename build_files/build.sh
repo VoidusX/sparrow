@@ -21,7 +21,7 @@ dnf5 remove -y firefox firefox-langpacks htop nvtop
 dnf5 install -y git cargo btop
 
 dnf5 -y copr enable lionheartp/Hyprland
-dnf5 install -y hyprland noctalia noctalia-greeter neovim greetd kitty distrobox \
+dnf5 install -y hyprland noctalia noctalia-greeter neovim greetd kitty distrobox hyprshot \
 hyprland-guiutils hyprshutdown --exclude=nwg-panel --exclude=uwsm
 dnf5 -y copr disable lionheartp/Hyprland
 
