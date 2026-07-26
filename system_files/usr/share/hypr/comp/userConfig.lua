@@ -8,8 +8,25 @@ function M.getUserConfigPath(systemEnabled)
 
     local xdg = os.getenv("XDG_CONFIG_HOME")
     if not xdg or xdg == "" then
+        -- try doing a alternative method if the above standard is undefined.
         print("{setup/user}: variable XDG_CONFIG_HOME is undefined.")
-        return { configDirPresent = false, configPresent = false, path = "" }
+
+        local user_home = os.getenv("HOME")
+        if not user_home or user_home == "" then
+            print("{setup/user}: fatal issue, variable HOME is undefined. This is a bug.")
+            return { configDirPresent = false, configPresent = false, path = "" }
+        end
+        if type(user_home) == "string" and user_home ~= "" then
+            xdg = user_home .. "/.config"
+            local xdg_cmd = string.format('test -d "%s"', xdg:gsub('"', '\\"'))
+            local xdg_code = os.execute(xdg_cmd)
+            local xdg_ok = (type(xdg_code) == "boolean" and xdg_code) or (type(xdg_code) == "number" and xdg_code == 0)
+
+            if not xdg_ok then
+                print("{setup/user}: fatal issue, user's .config dir not found. This is a bug.")
+                return { configDirPresent = false, configPresent = false, path = "" }
+            end
+        end
     end
 
     local dir = xdg .. "/hypr"

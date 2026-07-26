@@ -9,6 +9,12 @@ print("- user",config.UserConfig)
 local ipc = "noctalia msg"
 local mainMod = "SUPER"
 
+local function preload_workspaces(count)
+    for i = 1, count do
+        hl.workspace_rule({ workspace = tostring(i), persistent = true })
+    end
+end
+
 local function default_binds()
     -- Core binds
     hl.bind(mainMod .. "+SPACE", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"))
@@ -93,6 +99,7 @@ local lua_success, lua_err = pcall(function()
             hl.on("hyprland.start", function()
                 hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
             end)
+            preload_workspaces(5)
         end
     elseif user.Enabled == true and user.Loaded == true then
         if sparrow.IncludeDefaultBinds == true then
@@ -104,7 +111,6 @@ end)
 
 -- force the default preset with notification error if system config failed to load.
 if lua_success ~= true then
-
     local file, line, msg = lua_err:match("^(.-):(%d+):(.+)$")
     file = file:gsub("\\", "/")
     file = file:match("hypr/(.*)$")
@@ -119,4 +125,5 @@ if lua_success ~= true then
         hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
     end)
     hl.exec_cmd(string.format('notify-send "System Error" "%s[%s]:%s" -u critical -i dialog-error',file,tostring(line),msg))
+    preload_workspaces(5)
 end

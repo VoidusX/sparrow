@@ -2,6 +2,12 @@
 
 Sparrow is a immutable distribution that stays lightweight, and secure at the same time, it focuses on a simple yet essential goal. The goal to be customizable, scriptable, and extendable; using both secure user-space containers, and a simple/common scripting language for many applications/programs.
 
+> Default Wallpaper Credits (Day Forest Path):
+>- **@orangci (https://orangc.net/)** -- [repository owner](https://orangc.net/wallsppuccin)
+  >
+><br>**No author (artist) was referenced for this wallpaper.** 
+><br>if you are the sole author with verifiable sources, please contact the owner above & us for proper credits.
+
 ## The Essentials
 
 Sparrow comes with a simple and lightweight approach of packages/applications that fits to your needs. It comes with the following essentials:

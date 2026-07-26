@@ -72,3 +72,8 @@ cp -avf "/ctx/system_files"/. /
 # ctx fails to pull in git submodules like the lazyvim starter
 # sparrow works around this issue by injecting it manually
 git clone --depth 1 https://github.com/LazyVim/starter.git /etc/skel/.config/nvim
+
+# Include a default wallpaper for use.
+# Credits to orangci for the wallpaper source
+# More credits if found should be listed here.
+wget -q https://files.orangc.net/media/walls-catppuccin-mocha/day-forest-path.png -O /usr/share/sparrow/day-forest-path.png
