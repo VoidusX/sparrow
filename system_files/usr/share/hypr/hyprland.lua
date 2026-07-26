@@ -34,9 +34,9 @@ local function default_binds()
     hl.bind(mainMod .. "+E", hl.dsp.exec_cmd("kitty -- spf"))
 
     -- Hyprshot binds
-    hl.bind(mainMod .. "+PRINT",hl.dsp.exec_cmd("hyprshot -m window"))
-    hl.bind("PRINT",hl.dsp.exec_cmd("hyprshot -m output"))
-    hl.bind("SHIFT+PRINT",hl.dsp.exec_cmd("hyprshot -m region"))
+    hl.bind(mainMod .. "+PRINT",hl.dsp.exec_cmd("hyprshot -m window -o $HOME/Pictures"))
+    hl.bind("PRINT",hl.dsp.exec_cmd("hyprshot -m output -o $HOME/Pictures"))
+    hl.bind("SHIFT+PRINT",hl.dsp.exec_cmd("hyprshot -m region -o $HOME/Pictures"))
 end
 
 local presets = {}

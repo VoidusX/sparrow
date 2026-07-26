@@ -19,6 +19,7 @@ mkdir -p "$CARGO_HOME"
 dnf5 remove -y firefox firefox-langpacks htop nvtop
 
 dnf5 install -y git cargo btop
+dnf5 install -y xdg-user-dir --setopt=install_weak_deps=False
 
 dnf5 -y copr enable lionheartp/Hyprland
 dnf5 install -y hyprland noctalia noctalia-greeter neovim greetd kitty distrobox hyprshot \
