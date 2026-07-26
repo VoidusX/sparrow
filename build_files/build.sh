@@ -77,4 +77,4 @@ git clone --depth 1 https://github.com/LazyVim/starter.git /etc/skel/.config/nvi
 # Include a default wallpaper for use.
 # Credits to orangci for the wallpaper source
 # More credits if found should be listed here.
-wget -q https://files.orangc.net/media/walls-catppuccin-mocha/day-forest-path.png -O /usr/share/sparrow/day-forest-path.png
+wget -q https://files.orangc.net/media/walls-catppuccin-mocha/day-forest-path.png -O /usr/share/sparrow/wallpapers/day-forest-path.png

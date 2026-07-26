@@ -1,8 +1,12 @@
 [shell.animation]
 enabled = false
 
+[wallpaper]
+enabled = true
+directory = "/usr/share/sparrow/wallpapers"
+
 [wallpaper.default]
-path = "/usr/share/sparrow/day-forest-path.png"
+path = "/usr/share/sparrow/wallpapers/day-forest-path.png"
 
 [bar.default]
 concave_edge_corners = false
