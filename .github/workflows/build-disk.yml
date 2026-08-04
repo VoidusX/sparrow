@@ -15,6 +15,13 @@ on:
         options:
           - amd64
           - arm64
+      tag:
+        required: true
+        type: choice
+        default: latest
+        options:
+          - latest
+          - nvidia
   pull_request:
     branches:
       - main
@@ -85,21 +92,21 @@ jobs:
             --cap-add sys_admin \
             --security-opt label=disable \
             --squash \
-            --build-arg BASE_IMAGE="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}" \
-            -t "localhost/${{ env.IMAGE_NAME }}-payload:${{ env.DEFAULT_TAG }}" \
+            --build-arg BASE_IMAGE="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.tag }}" \
+            -t "localhost/${{ env.IMAGE_NAME }}-payload:${{ inputs.tag }}" \
             titanoboa/
 
       - name: Build ISO (2/2)
         id: build
         uses: ublue-os/titanoboa@main
         with:
-          image-ref: localhost/${{ env.IMAGE_NAME }}-payload:${{ env.DEFAULT_TAG }}
+          image-ref: localhost/${{ env.IMAGE_NAME }}-payload:${{ inputs.tag }}
 #          flatpaks-list: ${{ github.workspace }}/titanoboa/flatpaks.list
 #          hook-pre-initramfs: ${{ github.workspace }}/titanoboa/titanoboa_hook_preinitramfs.sh
 #          hook-post-rootfs: ${{ github.workspace }}/titanoboa/titanoboa_hook_postrootfs.sh
 #          compression: squashfs
 #          builder-distro: fedora
-          iso-dest: ${{ github.workspace }}/output/${{ env.IMAGE_NAME }}-${{ env.DEFAULT_TAG }}-live-${{ inputs.platform }}.iso
+          iso-dest: ${{ github.workspace }}/output/${{ env.IMAGE_NAME }}-${{ inputs.tag }}-live-${{ inputs.platform }}.iso
 
 
       - name: Upload disk images and Checksum to Job Artifacts
