@@ -62,10 +62,11 @@ RUN dnf5 config-manager enable fedora-nvidia-580
 
 # Then install the packages assuming they exist
 RUN dnf5 install -y \
-    akmod-nvidia-580xx \
-    xorg-x11-drv-nvidia-580xx \
-    xorg-x11-drv-nvidia-580xx-cuda \
-    nvidia-settings-580xx
+    akmod-nvidia \
+    xorg-x11-nvidia \
+    nvidia-driver-cuda \
+    nvidia-driver \
+    nvidia-settings
 
 # Final validation
 RUN bootc container lint
