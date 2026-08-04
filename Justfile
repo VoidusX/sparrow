@@ -7,6 +7,7 @@ export image_desc := env_var("IMAGE_DESC")
 export image_keywords := env_var("IMAGE_KEYWORDS")
 export image_logo_url := env_var("IMAGE_LOGO_URL")
 export default_tag := env_var("DEFAULT_TAG")
+export default_image := env_var_or_default("DEFAULT_TARGET", "main")
 export bib_image := env_var("BIB_IMAGE")
 
 alias build-vm := build-qcow2
@@ -93,7 +94,7 @@ sudoif command *args:
 #
 
 # Build the image using the specified parameters
-build $target_image=image_name $tag=default_tag:
+build $target_image=image_name $tag=default_tag $target_step=default_image:
     #!/usr/bin/env bash
 
     set -euox pipefail
@@ -123,6 +124,11 @@ build $target_image=image_name $tag=default_tag:
 
     # This actually builds the image!
     PODMAN_BUILD_ARGS=("${BUILD_ARGS[@]}" "${LABELS[@]}" --pull=newer --tag "${target_image}:${tag}" --file Containerfile)
+
+    # need to target a specific step for this
+    if [[ -n "${target_step}" ]]; then
+        PODMAN_BUILD_ARGS+=("--target" "${target_step}")
+    fi
 
     podman build "${PODMAN_BUILD_ARGS[@]}" .
 
@@ -230,6 +236,15 @@ image_name $target_image=image_name:
     set -eoux pipefail
 
     echo "${image_name}"
+
+# Image Target
+[group('Utility')]
+[private]
+image_target $target_image=default_image:
+    #!/usr/bin/env bash
+    set -eoux pipefail
+
+    echo "${default_image}"
 
 # Command: _rootful_load_image
 # Description: This script checks if the current user is root or running under sudo. If not, it attempts to resolve the image tag using podman inspect.

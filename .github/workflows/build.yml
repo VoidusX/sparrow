@@ -69,6 +69,13 @@ jobs:
 
           echo "DEFAULT_TAG=${DEFAULT_TAG}" >> $GITHUB_ENV
 
+      - name: Default Image Target
+        id: gen-default-target
+        run: |
+          DEFAULT_TARGET=$(just image_target)
+
+          echo "DEFAULT_TARGET=${DEFAULT_TARGET}" >> $GITHUB_ENV
+
       - name: Prepare environment
         run: |
           # Lowercase the image uri https://github.com/macbre/push-to-ghcr/issues/12
