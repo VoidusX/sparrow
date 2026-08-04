@@ -44,10 +44,10 @@ RUN bootc container lint
 FROM sparrow AS sparrow-nvidia
 
 # Install NVIDIA Akmods from ublue-os
-COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main / /tmp/akmods-nvidia-open
-RUN dnf5 install -y /tmp/akmods-nvidia-open/ublue-os/ublue-os-nvidia*.rpm \
-    && dnf5 install -y /tmp/akmods-nvidia-open/kmods/kmod-nvidia-open*.rpm \
-    && rpm-ostree cleanup -base
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-44 / /tmp/akmods-nvidia-open
+RUN find /tmp/akmods-nvidia-open
+RUN dnf5 install -y /tmp/akmods-nvidia-open/rpms/ublue-os/ublue-os-nvidia*.rpm && \
+dnf5 install -y /tmp/akmods-nvidia-open/rpms/kmods/kmod-nvidia*.rpm
 
 # Verifying image contents on nvidia akmods implementation
 RUN bootc container lint
@@ -55,14 +55,17 @@ RUN bootc container lint
 # For the legacy cards, we manually install the 580 drivers
 FROM sparrow as sparrow-nvidia-legacy
 
-RUN dnf install -y \
-    https://negativo17.org/repos/fedora-nvidia-580.repo \
-    && dnf config-manager --set-enabled fedora-nvidia-580
-RUN dnf install -y \
+# Get the repository from the negativo17 nvidia lts repos.
+RUN curl -Lo /etc/yum.repos.d/fedora-nvidia-580.repo \
+    https://negativo17.org/repos/fedora-nvidia-580.repo
+RUN dnf5 config-manager enable fedora-nvidia-580
+
+# Then install the packages assuming they exist
+RUN dnf5 install -y \
     akmod-nvidia-580xx \
     xorg-x11-drv-nvidia-580xx \
     xorg-x11-drv-nvidia-580xx-cuda \
-    nvidia-settings-580xx \
-    && rpm-ostree cleanup -base
+    nvidia-settings-580xx
 
+# Final validation
 RUN bootc container lint

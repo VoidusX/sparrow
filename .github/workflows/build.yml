@@ -23,7 +23,6 @@ concurrency:
 
 jobs:
   build_push:
-    name: Build and push image
     runs-on: ubuntu-24.04
 
     permissions:
@@ -42,6 +41,7 @@ jobs:
           - model: sparrow-nvidia-legacy
             tag: nvidia-legacy
 
+    name: Build and push sparrow:${{ matrix.tag }}
     steps:
       # These stage versions are pinned by https://github.com/renovatebot/renovate
       - name: Checkout
