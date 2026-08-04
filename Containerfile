@@ -60,8 +60,17 @@ RUN curl -Lo /etc/yum.repos.d/fedora-nvidia-580.repo \
     https://negativo17.org/repos/fedora-nvidia-580.repo
 RUN dnf5 config-manager enable fedora-nvidia-580
 
+# This is a HACK that is needed otherwise a systemd scriptlet will fail.
+# This bug is present here: https://bugzilla.redhat.com/show_bug.cgi?id=2379490
+#ENV AUDITD_DISABLED=1
+#RUN echo "%_audit_disable 1" >> /etc/rpm/macros.audit
+# The installation still tries requests for auditing despite disabling via the hacks above
+
 # Then install the packages assuming they exist
+# HACK: We attempt to use nocontext tsflag to forcibly not use the audit system as podman doesnt use it.
+# nocontext tsflag is not a thing, we need to exclude the systemd-rpm-macros dependency
 RUN dnf5 install -y \
+    --setopt=tsflags=noscripts \
     akmod-nvidia \
     xorg-x11-nvidia \
     nvidia-driver-cuda \
