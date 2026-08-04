@@ -4,7 +4,7 @@ COPY build_files /
 COPY system_files /system_files
 
 # Base Image
-FROM ghcr.io/ublue-os/base-main:latest
+FROM ghcr.io/ublue-os/base-main:latest AS sparrow
 ## Other possible base images include:
 # FROM ghcr.io/ublue-os/bazzite:testing
 # FROM ghcr.io/ublue-os/aurora:stable
@@ -38,4 +38,17 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 
 ### LINTING
 ## Verify final image and contents are correct.
+RUN bootc container lint
+
+## Nvidia Image
+FROM sparrow AS sparrow-nvidia
+
+# Install NVIDIA Akmods from ublue-os
+COPY --from=ghcr.io/ublue-os/akmods-nvidia:latest / /tmp/akmods-nvidia
+
+RUN dnf5 install -y /tmp/akmods-nvidia/rpms/kmods/kmod-nvidia*.rpm \
+    && dnf5 install -y /tmp/akmods-nvidia/rpms/ublue-os/ublue-os-nvidia*.rpm \
+    && rpm-ostree cleanup -base
+
+# Verifying image contents on nvidia akmods implementation
 RUN bootc container lint

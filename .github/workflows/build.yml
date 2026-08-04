@@ -31,6 +31,14 @@ jobs:
       packages: write
       id-token: write
 
+    strategy:
+      matrix:
+        include:
+          - model: sparrow
+            tag: latest
+          - model: sparrow-nvidia
+            tag: nvidia
+
     steps:
       # These stage versions are pinned by https://github.com/renovatebot/renovate
       - name: Checkout
@@ -73,7 +81,8 @@ jobs:
         run: |
           sudo -E $(command -v just) build \
             ${IMAGE_NAME} \
-            ${DEFAULT_TAG}
+            ${{ matrix.tag }} \
+            ${{ matrix.model }}
 
       # This is optional, this provides smaller delta updates
       - name: Rechunk with rpm-ostree
@@ -81,7 +90,7 @@ jobs:
         run: |
           sudo -E $(command -v just) ostree-rechunk \
             ${IMAGE_NAME} \
-            ${DEFAULT_TAG}
+            ${{ matrix.tag }}
 
       # If you are feeling adventurous, use the new distro agnostic rechunker
       # https://github.com/coreos/chunkah
@@ -98,7 +107,7 @@ jobs:
         run: |
           alias_tags="$(just generate-build-tags \
                         ${IMAGE_NAME} \
-                        ${DEFAULT_TAG})"
+                        ${{ matrix.tag }})"
 
           echo "Tags for this Action..."
           echo "${alias_tags}"
@@ -111,7 +120,7 @@ jobs:
         run: |
           sudo -E $(command -v just) tag-images \
             "${IMAGE_NAME}" \
-            "${DEFAULT_TAG}" \
+            ${{ matrix.tag }} \
             "${ALIAS_TAGS}"
 
       # These `if` statements are so that pull requests for your custom images do not make it publish any packages under your name without you knowing
