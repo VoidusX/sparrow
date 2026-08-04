@@ -39,6 +39,8 @@ jobs:
             tag: latest
           - model: sparrow-nvidia
             tag: nvidia
+          - model: sparrow-nvidia-legacy
+            tag: nvidia-legacy
 
     steps:
       # These stage versions are pinned by https://github.com/renovatebot/renovate
