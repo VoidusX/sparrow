@@ -1,6 +1,7 @@
 local config = require("setup")
 local sparrow = config.SparrowConfig
 local user = config.UserConfig
+local sparrow_notifs = config.SparrowNotifications
 
 print("{hyprland}: definitions check.")
 print("- sparrow",config.SparrowConfig)
@@ -17,26 +18,54 @@ end
 
 local function default_binds()
     -- Core binds
-    hl.bind(mainMod .. "+SPACE", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"))
-    hl.bind(mainMod .. "+S", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center"))
-    hl.bind(mainMod .. "+COMMA", hl.dsp.exec_cmd(ipc .. " settings-toggle"))
+    hl.bind(mainMod .. "+SPACE", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), {
+        description = "Open the Noctalia Launcher"
+    })
+    hl.bind(mainMod .. "+S", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center"), {
+        description = "Open the Noctalia Control Center"
+    })
+    hl.bind(mainMod .. "+COMMA", hl.dsp.exec_cmd(ipc .. " settings-toggle"), {
+        description = "Open the Noctalia's Settings"
+    })
 
     -- Media keys
-    hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(ipc .. " volume-up"))
-    hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(ipc .. " volume-down"))
-    hl.bind("XF86AudioMute", hl.dsp.exec_cmd(ipc .. " volume-mute"))
-    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(ipc .. " brightness-up"))
-    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. " brightness-down"))
+    hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(ipc .. " volume-up"), {
+        description = "Raise the volume"
+    })
+    hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(ipc .. " volume-down"), {
+        description = "Lower the volume"
+    })
+    hl.bind("XF86AudioMute", hl.dsp.exec_cmd(ipc .. " volume-mute"), {
+        description = "Mute the volume"
+    })
+    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(ipc .. " brightness-up"), {
+        description = "Raise the screen brightness"
+    })
+    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. " brightness-down"), {
+        description = "Lower the screen brightness"
+    })
 
     -- Sparrow Defaults
-    hl.bind(mainMod .. "+RETURN", hl.dsp.exec_cmd("kitty"))
-    hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium"))
-    hl.bind(mainMod .. "+E", hl.dsp.exec_cmd("kitty -- spf"))
+    hl.bind(mainMod .. "+RETURN", hl.dsp.exec_cmd("kitty"), {
+        description = "Launches a terminal session"
+    })
+    hl.bind(mainMod .. "+SHIFT+RETURN", hl.dsp.exec_cmd("helium"), {
+        description = "Launches the web browser"
+    })
+    hl.bind(mainMod .. "+E", hl.dsp.exec_cmd("kitty -- spf"), {
+        description = "Launches the file manager"
+    })
 
     -- Hyprshot binds
-    hl.bind(mainMod .. "+PRINT",hl.dsp.exec_cmd("hyprshot -m window -o $HOME/Pictures"))
-    hl.bind("PRINT",hl.dsp.exec_cmd("hyprshot -m output -o $HOME/Pictures"))
-    hl.bind("SHIFT+PRINT",hl.dsp.exec_cmd("hyprshot -m region -o $HOME/Pictures"))
+    hl.bind(mainMod .. "+PRINT",hl.dsp.exec_cmd("hyprshot -m window -o $HOME/Pictures"), {
+        description = "Capture a window as a screenshot"
+    })
+    hl.bind("PRINT",hl.dsp.exec_cmd("hyprshot -m output -o $HOME/Pictures"), {
+        description = "Capture the entire screen as a screenshot"
+    })
+    hl.bind("SHIFT+PRINT",hl.dsp.exec_cmd("hyprshot -m region -o $HOME/Pictures"), {
+        description = "Capture a given region as a screenshot"
+    })
 end
 
 local presets = {}
@@ -98,14 +127,26 @@ local lua_success, lua_err = pcall(function()
         if Config.DisableShell == false then
             hl.on("hyprland.start", function()
                 hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
+                for _, msg in sparrow_notifs do
+                    hl.exec_cmd("notify-send "..msg)
+                end
             end)
             preload_workspaces(5)
         end
     elseif user.Enabled == true and user.Loaded == true then
+        print("{hyprland}: user config loaded.")
+        print("use default binds? -> "..tostring(sparrow.IncludeDefaultBinds))
+
         if sparrow.IncludeDefaultBinds == true then
             default_binds()
-            print("{hyprland}: user config loaded w/ default binds.")
+            print("{hyprland}: injected default binds.")
         end
+
+        hl.on("hyprland.start",function()
+            for _, msg in sparrow_notifs do
+                hl.exec_cmd("notify-send "..msg)
+            end
+        end)
     end
 end)
 
@@ -123,7 +164,7 @@ if lua_success ~= true then
     hl.config({general = {layout = "dwindle"}});
     hl.on("hyprland.start", function()
         hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
+        hl.exec_cmd(string.format('notify-send "System Error" "%s[%s]:%s" -u critical -i dialog-error',file,tostring(line),msg))
     end)
-    hl.exec_cmd(string.format('notify-send "System Error" "%s[%s]:%s" -u critical -i dialog-error',file,tostring(line),msg))
     preload_workspaces(5)
 end

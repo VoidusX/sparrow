@@ -11,14 +11,17 @@ local isUserConfigAllowed = (sysConfig and sysConfig.Hyprland and sysConfig.Hypr
 local userStatus = userConfig.getUserConfigPath(isUserConfigAllowed)
 local envStatus = sparrow.loadSystemVariables()
 local success;
+local notifs = {} -- internal notification cache to unload after
+
 
 if envStatus ~= true then
-    hl.exec_cmd(string.format('notify-send "Hyprland" "%s" -u critical -i dialog-error', "Failed to obtain System Enviornment Variables!"))
+    print("{setup}: system's env vars not present.")
+    table.insert(notifs,string.format('"Hyprland" "%s" -u critical -i dialog-error', "Failed to obtain System Enviornment Variables!"))
 end
 
 if userStatus.configPresent == true then
     success = true
-    hl.exec_cmd(string.format('notify-send "Hyprland" "Loading user config: %s" -i preferences-system', userStatus.path))
+    table.insert(notifs,string.format('"Hyprland" "Loading user config: %s" -i preferences-system', userStatus.path))
     local user_dir = userStatus.path:match("(.*)/")
     package.path = user_dir .. "/?.lua;" .. package.path
 
@@ -27,7 +30,7 @@ if userStatus.configPresent == true then
         func()
     else
         success = false;
-        hl.exec_cmd(string.format('notify-send "Hyprland" "Failed to load user config: %s" -u critical -i dialog-error', err))
+        table.insert(notifs,string.format('"Hyprland" "Failed to load user config: %s" -u critical -i dialog-error', err))
     end
 elseif userStatus.configPresent == false then
     local msg = ""
@@ -55,7 +58,7 @@ elseif userStatus.configPresent == false then
     end
 
     if noNotify == false then
-        hl.exec_cmd(string.format('notify-send "Hyprland" "%s" -u %s -i %s', msg, urgency, icon))
+        table.insert(notifs,string.format('"Hyprland" "%s" -u %s -i %s', msg, urgency, icon))
     end
 end
 
@@ -65,7 +68,8 @@ if userStatus.configPresent == true and success == false then
         UserConfig = {
             Enabled = isUserConfigAllowed,
             Loaded = false,
-        }
+        },
+        SparrowNotifications = notifs
     }
 elseif userStatus.configPresent == true and success == true then
     return {
@@ -73,7 +77,8 @@ elseif userStatus.configPresent == true and success == true then
         UserConfig = {
             Enabled = isUserConfigAllowed,
             Loaded = userStatus.configPresent,
-        }
+        },
+        SparrowNotifications = notifs
     }
 elseif userStatus.configPresent == false then
     return {
@@ -81,6 +86,7 @@ elseif userStatus.configPresent == false then
         UserConfig = {
             Enabled = isUserConfigAllowed,
             Loaded = userStatus.configPresent,
-        }
+        },
+        SparrowNotifications = notifs
     }
 end
