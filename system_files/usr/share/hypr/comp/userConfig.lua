@@ -19,8 +19,11 @@ function M.getUserConfigPath(systemEnabled)
         if type(user_home) == "string" and user_home ~= "" then
             xdg = user_home .. "/.config"
             local xdg_cmd = string.format('test -d "%s"', xdg:gsub('"', '\\"'))
-            local xdg_code = os.execute(xdg_cmd)
+            local xdg_code, xdg_state = os.execute(xdg_cmd)
             print("{setup/user/shell}: cmd exec payload: "..tostring(xdg_cmd).." -> "..tostring(xdg_code))
+            if xdg_code == nil then
+                print("{setup/user/shell}: exec failed (returned null), reason -> "..tostring(xdg_state))
+            end
 
             local xdg_ok = (type(xdg_code) == "boolean" and xdg_code) or (type(xdg_code) == "number" and xdg_code == 0)
             print("{setup/user/shell}: cmd exec success: "..tostring(xdg_ok))
@@ -37,8 +40,11 @@ function M.getUserConfigPath(systemEnabled)
 
     -- Check Directory
     local cmd = string.format('test -d "%s"', dir:gsub('"', '\\"'))
-    local code = os.execute(cmd)
+    local code, state = os.execute(cmd)
     print("{setup/user/shell}: cmd exec payload: "..tostring(cmd).." -> "..tostring(code))
+    if code == nil then
+        print("{setup/user/shell}: exec failed (returned null), reason -> "..tostring(state))
+    end
 
     local dir_ok = (type(code) == "boolean" and code) or (type(code) == "number" and code == 0)
     print("{setup/user/shell}: cmd exec success: "..tostring(dir_ok))
