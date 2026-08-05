@@ -127,7 +127,7 @@ local lua_success, lua_err = pcall(function()
         if Config.DisableShell == false then
             hl.on("hyprland.start", function()
                 hl.exec_cmd("noctalia --daemon || noctalia --daemon || noctalia --daemon || hyprshutdown ")
-                for _, msg in sparrow_notifs do
+                for _, msg in ipairs(sparrow_notifs) do
                     hl.exec_cmd("notify-send "..msg)
                 end
             end)
@@ -135,15 +135,15 @@ local lua_success, lua_err = pcall(function()
         end
     elseif user.Enabled == true and user.Loaded == true then
         print("{hyprland}: user config loaded.")
-        print("use default binds? -> "..tostring(sparrow.IncludeDefaultBinds))
+        print("use default binds? -> "..tostring(sparrow.Hyprland.IncludeDefaultBinds))
 
-        if sparrow.IncludeDefaultBinds == true then
+        if sparrow.Hyprland.IncludeDefaultBinds == true then
             default_binds()
             print("{hyprland}: injected default binds.")
         end
 
         hl.on("hyprland.start",function()
-            for _, msg in sparrow_notifs do
+            for _, msg in ipairs(sparrow_notifs) do
                 hl.exec_cmd("notify-send "..msg)
             end
         end)
