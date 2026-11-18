@@ -30,29 +30,54 @@ dnf5 -y copr enable imput/helium
 dnf5 install -y helium-bin
 dnf5 -y copr disable imput/helium
 
-# File Manager (A)
+# File Manager (A) [DEPRECATED]
 dnf5 -y copr enable relativesure/all-packages
 dnf5 install -y superfile --setopt=install_weak_deps=False
 dnf5 -y copr disable relativesure/all-packages
 
-# File Manager (B)
+# File Manager (B) [DEPRECATED]
 # This is a alternative for advanced users specifically.
 dnf5 -y copr enable lihaohong/yazi
 dnf5 install -y yazi --setopt=install_weak_deps=False
 dnf5 -y copr disable lihaohong/yazi
 
-git clone https://github.com/Gerharddc/litterbox.git /tmp/litterbox
-cd /tmp/litterbox/litterbox
-cargo build --release
-cp target/release/litterbox /usr/bin/
-cd /
+# IN THE FUTURE, THE ABOVE FILEMANAGERS WILL BE REPLACED WITH noctalia-dev/luciole
+# THERE IS NO EXISTING RPM BINARY FOR FEDORA BASED DISTROS LIKE UBLUE AND THUS SPARROW.
+
+# Litterbox, this once required compiling, now a patched installer exists.
+/ctx/patches/litterbox.sh
+
+# git clone https://github.com/Gerharddc/litterbox.git /tmp/litterbox
+# cd /tmp/litterbox/litterbox
+# cargo build --release
+# cp target/release/litterbox /usr/bin/
+# cd /
 
 # Required for the below packages to work.
-dnf5 install -y alsa-lib-devel
+#dnf5 install -y alsa-lib-devel
 
 # Pre-installed games for simple entertainment
-cargo install --root /usr tetro-tui
-cargo install --root /usr chess-tui
+# cargo install --root /usr tetro-tui
+# cargo install --root /usr chess-tui
+# This has been changed, cargo compiles binaries which slows down the installation process.
+# Instead, we attempt to download compiled binaries directly.
+ARCH="$(uname -m)"
+
+# tetro-tui
+tmp=$(mktemp -d)
+curl -sfL "https://api.github.com/repos/Strophox/tetro-tui/releases/latest" \
+    | jq -r --arg arch "$ARCH" '.assets[] | select(.name | test($arch; "i") and test("linux"; "i")) | .browser_download_url' \
+    | head -1 | xargs curl -sfL | tar -xz -C "$tmp"
+mv "$tmp"/*/tetro-tui /usr/bin/
+rm -rf "$tmp"
+
+# chess-tui
+tmp=$(mktemp -d)
+curl -sfL "https://api.github.com/repos/thomas-mauran/chess-tui/releases/latest" \
+    | jq -r --arg arch "$ARCH" '.assets[] | select(.name | test($arch; "i") and test("linux"; "i")) | .browser_download_url' \
+    | head -1 | xargs curl -sfL | tar -xz -C "$tmp"
+mv "$tmp"/*/chess-tui /usr/bin/
+rm -rf "$tmp"
 
 # Use a COPR Example:
 #
